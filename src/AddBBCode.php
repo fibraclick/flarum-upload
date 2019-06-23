@@ -12,7 +12,8 @@ class AddBBCode
 
     public function __construct(SettingsRepositoryInterface $settings)
     {
-        $this->prefix = $settings->get("botfactoryit-upload.prefix");
+        $p = $settings->get("botfactoryit-upload.prefix");
+        $this->prefix = rtrim($p, "/");
     }
 
     public function subscribe(Dispatcher $dispatcher)
@@ -25,7 +26,7 @@ class AddBBCode
         $event->configurator->BBCodes->addCustom(
             '[IMMAGINE]{TEXT}[/IMMAGINE]',
             sprintf(
-                '<a href="%s{TEXT}" target="_blank"><img src="%s{TEXT}?size=h"></a>',
+                '<a href="%s/{TEXT}" target="_blank"><img src="%s/size=1024/{TEXT}"></a>',
                 $this->prefix,
                 $this->prefix
             )

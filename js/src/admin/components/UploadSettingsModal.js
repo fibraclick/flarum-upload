@@ -17,7 +17,7 @@ export default class UploadSettingsModal extends SettingsModal {
 			</div>,
 
 			<div className="Form-group">
-				<label>URL prefix (including /)</label>
+				<label>URL prefix (optional /)</label>
 				<input className="FormControl" bidi={this.setting('botfactoryit-upload.prefix')}/>
 			</div>
 		];
