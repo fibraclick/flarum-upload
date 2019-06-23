@@ -1,0 +1,11 @@
+botfactoryit-upload:
+  forum:
+    upload: Premi o incolla per caricare
+    loading: Caricamento...
+    done: Fatto!
+    error:
+      unsupported: Formato non supportato
+      too-big: Il file caricato è troppo grande
+  admin:
+    settings:
+      title: Upload settings

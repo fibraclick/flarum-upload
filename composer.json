@@ -1,0 +1,34 @@
+{
+  "name": "botfactoryit/flarum-upload",
+  "description": "Upload images Flarum post composer",
+  "keywords": [
+    "flarum"
+  ],
+  "type": "flarum-extension",
+  "license": "MIT",
+  "require": {
+    "flarum/core": "^0.1.0-beta.8"
+  },
+  "authors": [
+    {
+      "name": "Matteo Contrini",
+      "email": "matteo@contrini.it",
+      "role": "Developer"
+    }
+  ],
+  "autoload": {
+    "psr-4": {
+      "BotFactory\\Upload\\": "src/"
+    }
+  },
+  "extra": {
+    "flarum-extension": {
+      "title": "Upload",
+      "icon": {
+        "name": "fas fa-arrow-circle-up",
+        "backgroundColor": "#D2202F",
+        "color": "#ffffff"
+      }
+    }
+  }
+}
