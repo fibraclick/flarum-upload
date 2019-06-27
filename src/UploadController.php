@@ -59,25 +59,25 @@ class UploadController implements RequestHandlerInterface
             $now = Carbon::now();
 
             // Generate the new file name
-            $filePath = sprintf("%s/%d_%s_%d.%s",
-                $now->format('Y/m'),
+            $fileName = sprintf("%d_%s_%d.%s",
                 $now->timestamp,
-                $discussionId,
                 $actor->id,
+                $discussionId,
                 $this->mimeToExtension($mime)
             );
 
-            $fullFilePath = $this->storagePath . $filePath;
-            $dir = dirname($fullFilePath);
+            $prefix = $now->format('Y/m/');
 
-            if (!is_dir($dir)) {
-                mkdir($dir, 0777, true);
+            $fileDir = $this->storagePath . $prefix;
+
+            if (!is_dir($fileDir)) {
+                mkdir($fileDir, 0777, true);
             }
 
-            rename($tmpFilePath, $fullFilePath);
+            copy($tmpFilePath, $fileDir . $fileName);
 
             return new JsonResponse([
-                "fileName" => $filePath
+                "fileName" => $fileName
             ]);
         }
         finally {
