@@ -77,7 +77,7 @@ class UploadController implements RequestHandlerInterface
             copy($tmpFilePath, $fileDir . $fileName);
 
             return new JsonResponse([
-                "fileName" => $fileName
+                "fileName" => $prefix . $fileName
             ]);
         }
         finally {
