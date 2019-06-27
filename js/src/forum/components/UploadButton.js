@@ -76,9 +76,15 @@ export default class UploadButton extends Component {
         this.isLoading = true;
         m.redraw();
 
+        let did = 0;
+
+        if (app.current.discussion) {
+            did = app.current.discussion.id();
+        }
+
         let formData = new FormData();
         formData.append('image', file);
-        formData.append('d', app.current.discussion.id());
+        formData.append('d', did);
 
         app.request({
             method: 'POST',
