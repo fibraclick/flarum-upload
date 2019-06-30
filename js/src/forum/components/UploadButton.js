@@ -148,7 +148,7 @@ export default class UploadButton extends Component {
         if (err.status == 415) {
             key = 'botfactoryit-upload.forum.error.unsupported';
         }
-        else if (err.status == 400) {
+        else if (err.status == 400 || err.status == 413) {
             key = 'botfactoryit-upload.forum.error.too-big';
         }
         else {
