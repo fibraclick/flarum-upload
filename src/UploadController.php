@@ -2,30 +2,25 @@
 
 namespace BotFactory\Upload;
 
-use BackblazeB2\Client;
 use BotFactory\Upload\Exceptions\UploadPhpException;
 use BotFactory\Upload\Exceptions\WrongMimeTypeException;
-use BotFactory\Upload\Validators\UploadValidator;
 use Carbon\Carbon;
 use Exception;
-use Flarum\Foundation\Application;
+use Flarum\Foundation\Paths;
 use Flarum\Settings\SettingsRepositoryInterface;
-use Flarum\User\AssertPermissionTrait;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Server\RequestHandlerInterface;
-use Zend\Diactoros\Response\JsonResponse;
+use Laminas\Diactoros\Response\JsonResponse;
 
 class UploadController implements RequestHandlerInterface
 {
-    use AssertPermissionTrait;
-
     private $tmpPath;
     private $storagePath;
 
-    public function __construct(Application $app, SettingsRepositoryInterface $settings)
+    public function __construct(Paths $paths, SettingsRepositoryInterface $settings)
     {
-        $this->tmpPath = $app->storagePath() . '/tmp';
+        $this->tmpPath = $paths->storage . '/tmp';
         $this->storagePath = $settings->get("botfactoryit-upload.storage-path");
     }
 
@@ -33,7 +28,7 @@ class UploadController implements RequestHandlerInterface
     {
         // Assert that the user is logged in
         $actor = $request->getAttribute('actor');
-        $this->assertRegistered($actor);
+        $actor->assertRegistered();
 
         // Extract discussion ID and file object
         $discussionId = $request->getParsedBody()['d'];
@@ -71,7 +66,9 @@ class UploadController implements RequestHandlerInterface
             $fileDir = $this->storagePath . $prefix;
 
             if (!is_dir($fileDir)) {
-                mkdir($fileDir, 0777, true);
+                if (!mkdir($fileDir, 0777, true)) {
+                    return $this->error(new UploadPhpException(UPLOAD_ERR_CANT_WRITE));
+                }
             }
 
             copy($tmpFilePath, $fileDir . $fileName);
@@ -79,8 +76,7 @@ class UploadController implements RequestHandlerInterface
             return new JsonResponse([
                 "fileName" => $prefix . $fileName
             ]);
-        }
-        finally {
+        } finally {
             @unlink($tmpFilePath);
         }
     }
@@ -89,16 +85,15 @@ class UploadController implements RequestHandlerInterface
     {
         if ($mime == "image/jpeg") {
             return "jpg";
-        }
-        else if ($mime = "image/png") {
+        } else if ($mime = "image/png") {
             return "png";
-        }
-        else if ($mime == "image/webp") {
+        } else if ($mime == "image/webp") {
             return "webp";
         }
     }
 
-    private function error(Exception $ex): Response {
+    private function error(Exception $ex): Response
+    {
         return new JsonResponse([
             "status" => $ex->getCode(),
             "message" => $ex->getMessage()

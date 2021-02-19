@@ -2,11 +2,7 @@
 
 namespace BotFactory\Upload;
 
-use BotFactory\Upload\ExceptionHandlers\UploadPhpExceptionHandler;
-use BotFactory\Upload\ExceptionHandlers\WrongMimeTypeExceptionHandler;
-use Illuminate\Contracts\Events\Dispatcher;
 use Flarum\Extend;
-use Tobscure\JsonApi\ErrorHandler;
 
 return [
     (new Extend\Frontend('forum'))
@@ -21,8 +17,6 @@ return [
     (new Extend\Routes('api'))
         ->post('/upload', 'botfactoryit-upload', UploadController::class),
 
-    function (Dispatcher $dispatcher, ErrorHandler $handler)
-    {
-        $dispatcher->subscribe(AddBBCode::class);
-    },
+    (new Extend\Formatter)
+        ->configure(AddBBCode::class)
 ];

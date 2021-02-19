@@ -3,7 +3,6 @@
 namespace BotFactory\Upload\Exceptions;
 
 use Exception;
-use Throwable;
 
 class WrongMimeTypeException extends Exception
 {

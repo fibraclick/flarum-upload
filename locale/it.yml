@@ -6,6 +6,3 @@ botfactoryit-upload:
     error:
       unsupported: Formato non supportato
       too-big: Il file caricato è troppo grande
-  admin:
-    settings:
-      title: Upload settings

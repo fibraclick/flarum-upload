@@ -2,9 +2,8 @@
 
 namespace BotFactory\Upload;
 
-use Flarum\Formatter\Event\Configuring;
 use Flarum\Settings\SettingsRepositoryInterface;
-use Illuminate\Contracts\Events\Dispatcher;
+use s9e\TextFormatter\Configurator;
 
 class AddBBCode
 {
@@ -16,14 +15,9 @@ class AddBBCode
         $this->prefix = rtrim($p, "/");
     }
 
-    public function subscribe(Dispatcher $dispatcher)
+    public function __invoke(Configurator $config)
     {
-        $dispatcher->listen(Configuring::class, [$this, 'configure']);
-    }
-
-    public function configure(Configuring $event)
-    {
-        $event->configurator->BBCodes->addCustom(
+        $config->BBCodes->addCustom(
             '[IMMAGINE]{TEXT}[/IMMAGINE]',
             sprintf(
                 '<a href="%s/{TEXT}" target="_blank"><img src="%s/size=1024/{TEXT}"></a>',

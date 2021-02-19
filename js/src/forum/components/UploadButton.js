@@ -1,23 +1,30 @@
 import Component from 'flarum/Component';
 import icon from 'flarum/helpers/icon';
 import LoadingIndicator from 'flarum/components/LoadingIndicator';
-import Alert from 'flarum/components/Alert';
 
 export default class UploadButton extends Component {
-    init() {
+    oncreate(vnode) {
+        super.oncreate(vnode)
+
         this.isLoading = false;
         this.isSuccess = false;
 
-        document.addEventListener('paste', this.paste.bind(this));
+        this.isPasteListenerAttached = false;
+    }
+
+    onupdate(vnode) {
+        if (!this.isPasteListenerAttached) {
+            this.isPasteListenerAttached = true;
+            this.attrs.textArea.el.addEventListener('paste', this.paste.bind(this));
+        }
     }
 
     view() {
         let attrs = {
             className: 'Button hasIcon botfactoryit-upload-button',
             title: app.translator.trans('botfactoryit-upload.forum.upload'),
-            config: (el) => {
-                this.domElement = el;
-                $(el).tooltip();
+            oncreate: (el) => {
+                $(el.dom).tooltip();
             }
         };
 
@@ -31,7 +38,7 @@ export default class UploadButton extends Component {
         else if (this.isSuccess) label = app.translator.trans('botfactoryit-upload.forum.done');
 
         // When there is no label, the component element should be shown as a square button
-        if (label == '') {
+        if (label === '') {
             attrs.className += ' Button--icon';
         }
 
@@ -72,7 +79,7 @@ export default class UploadButton extends Component {
     }
 
     upload(file) {
-        $(this.domElement).tooltip('hide'); // force removal of the tooltip
+        $(this.element).tooltip('hide'); // force removal of the tooltip
         this.isLoading = true;
         m.redraw();
 
@@ -90,7 +97,7 @@ export default class UploadButton extends Component {
             method: 'POST',
             url: app.forum.attribute('apiUrl') + '/upload',
             serialize: raw => raw,
-            data: formData,
+            body: formData,
             errorHandler: (err) => this.error(err)
         }).then(this.success.bind(this));
     }
@@ -106,9 +113,9 @@ export default class UploadButton extends Component {
         let fileName = response.fileName;
         let bbcode = `[IMMAGINE]${fileName}[/IMMAGINE]`;
 
-        let cursorPosition = this.props.textArea.getSelectionRange()[0];
+        let cursorPosition = this.attrs.textArea.getSelectionRange()[0];
 
-        if (cursorPosition == 0) {
+        if (cursorPosition === 0) {
             bbcode += '\n\n';
         }
         else {
@@ -116,8 +123,8 @@ export default class UploadButton extends Component {
         }
 
         // Trim the textarea content and insert the bbcode
-        this.props.textArea.setValue(this.props.textArea.value().trim());
-        this.props.textArea.insertAtCursor(bbcode);
+        this.attrs.textArea.setValue(this.attrs.textArea.el.value.trim());
+        this.attrs.textArea.insertAtCursor(bbcode);
 
         // After a bit, re-enable upload
         setTimeout(() => {
@@ -136,19 +143,16 @@ export default class UploadButton extends Component {
         this.isLoading = false;
         m.redraw();
 
-        app.alerts.show(new Alert({
-            type: "error",
-            children: this.errorToMessage(err)
-        }));
+        app.alerts.show({ type: "error" }, this.errorToMessage(err));
     }
 
     errorToMessage(err) {
         let key;
 
-        if (err.status == 415) {
+        if (err.status === 415) {
             key = 'botfactoryit-upload.forum.error.unsupported';
         }
-        else if (err.status == 400 || err.status == 413) {
+        else if (err.status === 400 || err.status === 413) {
             key = 'botfactoryit-upload.forum.error.too-big';
         }
         else {
