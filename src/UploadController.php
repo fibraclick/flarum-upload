@@ -8,6 +8,7 @@ use Carbon\Carbon;
 use Exception;
 use Flarum\Foundation\Paths;
 use Flarum\Settings\SettingsRepositoryInterface;
+use Intervention\Image\ImageManager;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Server\RequestHandlerInterface;
@@ -54,11 +55,10 @@ class UploadController implements RequestHandlerInterface
             $now = Carbon::now();
 
             // Generate the new file name
-            $fileName = sprintf("%d_%s_%d.%s",
+            $fileName = sprintf("%d_%s_%d.jpg",
                 $now->timestamp,
                 $actor->id,
-                $discussionId,
-                $this->mimeToExtension($mime)
+                $discussionId
             );
 
             $prefix = $now->format('Y/m/');
@@ -71,24 +71,24 @@ class UploadController implements RequestHandlerInterface
                 }
             }
 
-            copy($tmpFilePath, $fileDir . $fileName);
+            $outputPath = $fileDir . $fileName;
+
+            $manager = new ImageManager(['driver' => 'imagick']);
+
+            $img = $manager->make($tmpFilePath)->orientate();
+
+            $exif = $img->getCore()->getImageProfiles('exif', false);
+            if (count($exif) > 0) {
+                $img->getCore()->removeImageProfile('exif');
+            }
+
+            $img->save($outputPath, 80);
 
             return new JsonResponse([
                 "fileName" => $prefix . $fileName
             ]);
         } finally {
             @unlink($tmpFilePath);
-        }
-    }
-
-    private function mimeToExtension(string $mime)
-    {
-        if ($mime == "image/jpeg") {
-            return "jpg";
-        } else if ($mime = "image/png") {
-            return "png";
-        } else if ($mime == "image/webp") {
-            return "webp";
         }
     }
 

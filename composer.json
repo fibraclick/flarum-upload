@@ -8,7 +8,8 @@
     "license": "MIT",
     "require": {
         "flarum/core": ">=0.1.0-beta.15 <0.1.0-beta.16",
-        "ext-fileinfo": "*"
+        "ext-fileinfo": "*",
+        "intervention/image": "^2.5"
     },
     "authors": [
         {
