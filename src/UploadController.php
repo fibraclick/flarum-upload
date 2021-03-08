@@ -82,7 +82,7 @@ class UploadController implements RequestHandlerInterface
                 $img->getCore()->removeImageProfile('exif');
             }
 
-            $img->save($outputPath, 80);
+            $img->save($outputPath, 85);
 
             return new JsonResponse([
                 "fileName" => $prefix . $fileName
