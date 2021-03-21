@@ -1,6 +1,6 @@
-import Component from 'flarum/Component';
-import icon from 'flarum/helpers/icon';
-import LoadingIndicator from 'flarum/components/LoadingIndicator';
+import Component from 'flarum/common/Component';
+import icon from 'flarum/common/helpers/icon';
+import LoadingIndicator from 'flarum/common/components/LoadingIndicator';
 
 export default class UploadButton extends Component {
     oncreate(vnode) {
@@ -29,9 +29,9 @@ export default class UploadButton extends Component {
         };
 
         let buttonIcon;
-        if (this.isLoading) buttonIcon = LoadingIndicator.component({ className: 'Button-icon' });
-        else if (this.isSuccess) buttonIcon = icon('fas fa-check green', { className: 'Button-icon' });
-        else buttonIcon = icon('far fa-image', { className: 'Button-icon' });
+        if (this.isLoading) buttonIcon = LoadingIndicator.component({className: 'Button-icon'});
+        else if (this.isSuccess) buttonIcon = icon('fas fa-check green', {className: 'Button-icon'});
+        else buttonIcon = icon('far fa-image', {className: 'Button-icon'});
 
         let label = '';
         if (this.isLoading) label = app.translator.trans('botfactoryit-upload.forum.loading');
@@ -44,7 +44,7 @@ export default class UploadButton extends Component {
 
         return m('div', attrs, [
                 buttonIcon,
-                m('span', { className: 'Button-label' }, label),
+                m('span', {className: 'Button-label'}, label),
                 m('form#botfactoryit-upload-form', [
                     m('input', {
                         type: 'file',
@@ -117,8 +117,7 @@ export default class UploadButton extends Component {
 
         if (cursorPosition === 0) {
             bbcode += '\n\n';
-        }
-        else {
+        } else {
             bbcode = `\n\n${bbcode}\n\n`;
         }
 
@@ -143,7 +142,7 @@ export default class UploadButton extends Component {
         this.isLoading = false;
         m.redraw();
 
-        app.alerts.show({ type: "error" }, this.errorToMessage(err));
+        app.alerts.show({type: "error"}, this.errorToMessage(err));
     }
 
     errorToMessage(err) {
@@ -151,11 +150,9 @@ export default class UploadButton extends Component {
 
         if (err.status === 415) {
             key = 'botfactoryit-upload.forum.error.unsupported';
-        }
-        else if (err.status === 400 || err.status === 413) {
+        } else if (err.status === 400 || err.status === 413) {
             key = 'botfactoryit-upload.forum.error.too-big';
-        }
-        else {
+        } else {
             key = 'core.lib.error.generic_message';
         }
 
