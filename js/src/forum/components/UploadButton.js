@@ -1,10 +1,11 @@
 import Component from 'flarum/common/Component';
-import icon from 'flarum/common/helpers/icon';
 import LoadingIndicator from 'flarum/common/components/LoadingIndicator';
+import Button from 'flarum/common/components/Button';
+import classList from "flarum/common/utils/classList";
 
 export default class UploadButton extends Component {
-    oncreate(vnode) {
-        super.oncreate(vnode)
+    oninit(vnode) {
+        super.oninit(vnode)
 
         this.isLoading = false;
         this.isSuccess = false;
@@ -12,50 +13,46 @@ export default class UploadButton extends Component {
         this.isPasteListenerAttached = false;
     }
 
+    oncreate(vnode) {
+        super.oncreate(vnode);
+
+        this.$().tooltip();
+    }
+
     onupdate(vnode) {
         if (!this.isPasteListenerAttached) {
             this.isPasteListenerAttached = true;
-            this.attrs.textArea.el.addEventListener('paste', this.paste.bind(this));
+            this.attrs.textArea.addEventListener('paste', this.paste.bind(this));
         }
     }
 
     view() {
-        let attrs = {
-            className: 'Button hasIcon botfactoryit-upload-button',
-            title: app.translator.trans('botfactoryit-upload.forum.upload'),
-            oncreate: (el) => {
-                $(el.dom).tooltip();
-            }
-        };
-
         let buttonIcon;
-        if (this.isLoading) buttonIcon = LoadingIndicator.component({className: 'Button-icon'});
-        else if (this.isSuccess) buttonIcon = icon('fas fa-check green', {className: 'Button-icon'});
-        else buttonIcon = icon('far fa-image', {className: 'Button-icon'});
+        if (this.isSuccess) buttonIcon = 'fas fa-check green';
+        else if (this.isError) buttonIcon = 'fas fa-times red';
+        else if (!this.isLoading) buttonIcon = 'far fa-image';
 
         let label = '';
         if (this.isLoading) label = app.translator.trans('botfactoryit-upload.forum.loading');
         else if (this.isSuccess) label = app.translator.trans('botfactoryit-upload.forum.done');
 
-        // When there is no label, the component element should be shown as a square button
-        if (label === '') {
-            attrs.className += ' Button--icon';
-        }
-
-        return m('div', attrs, [
-                buttonIcon,
-                m('span', {className: 'Button-label'}, label),
-                m('form#botfactoryit-upload-form', [
-                    m('input', {
-                        type: 'file',
-                        accept: 'image/*',
-                        onchange: this.formUpload.bind(this),
-                        // disable button while doing things
-                        disabled: this.isLoading || this.isSuccess || this.isError
-                    })
-                ])
-            ]
-        );
+        return <Button
+            className={classList([
+                'Button',
+                'hasIcon',
+                'botfactoryit-upload-button',
+                label === '' && 'Button--icon',
+            ])}
+            icon={buttonIcon}
+            onclick={this.buttonClicked.bind(this)}
+            title={app.translator.trans('botfactoryit-upload.forum.upload')}>
+            {this.isLoading && <LoadingIndicator size="tiny" className="LoadingIndicator--inline Button-icon"/>}
+            <span className="Button-label">{label}</span>
+            <form>
+                <input type="file" accept="image/*" onchange={this.formUpload.bind(this)}
+                       disabled={this.isLoading || this.isSuccess || this.isError}/>
+            </form>
+        </Button>
     }
 
     paste(e) {
@@ -73,13 +70,22 @@ export default class UploadButton extends Component {
         }
     }
 
+    buttonClicked(e) {
+        this.$('input').click();
+    }
+
     formUpload(e) {
-        let file = $(e.target)[0].files[0];
-        this.upload(file);
+        const files = this.$('input').prop('files');
+
+        if (files.length === 0) {
+            return;
+        }
+
+        this.upload(files[0]);
     }
 
     upload(file) {
-        $(this.element).tooltip('hide'); // force removal of the tooltip
+        this.$().tooltip('hide'); // force removal of the tooltip
         this.isLoading = true;
         m.redraw();
 
@@ -89,7 +95,7 @@ export default class UploadButton extends Component {
             did = app.current.discussion.id();
         }
 
-        let formData = new FormData();
+        const formData = new FormData();
         formData.append('image', file);
         formData.append('d', did);
 
@@ -104,7 +110,7 @@ export default class UploadButton extends Component {
 
     success(response) {
         // Clear the upload form
-        $('#botfactoryit-upload-form input').val('');
+        this.$('input').val('');
 
         this.isLoading = false;
         this.isSuccess = true;
@@ -113,7 +119,7 @@ export default class UploadButton extends Component {
         let fileName = response.fileName;
         let bbcode = `[IMMAGINE]${fileName}[/IMMAGINE]`;
 
-        let cursorPosition = this.attrs.textArea.getSelectionRange()[0];
+        let cursorPosition = this.attrs.editor.getSelectionRange()[0];
 
         if (cursorPosition === 0) {
             bbcode += '\n\n';
@@ -121,9 +127,8 @@ export default class UploadButton extends Component {
             bbcode = `\n\n${bbcode}\n\n`;
         }
 
-        // Trim the textarea content and insert the bbcode
-        this.attrs.textArea.setValue(this.attrs.textArea.el.value.trim());
-        this.attrs.textArea.insertAtCursor(bbcode);
+        // Insert the bbcode
+        this.attrs.editor.insertAtCursor(bbcode);
 
         // After a bit, re-enable upload
         setTimeout(() => {
@@ -137,7 +142,7 @@ export default class UploadButton extends Component {
         console.error(err);
 
         // Clear the upload form
-        $('#botfactoryit-upload-form input').val('');
+        this.$('input').val('');
 
         this.isLoading = false;
         m.redraw();
