@@ -2,6 +2,7 @@ import Component from 'flarum/common/Component';
 import LoadingIndicator from 'flarum/common/components/LoadingIndicator';
 import Button from 'flarum/common/components/Button';
 import classList from "flarum/common/utils/classList";
+import DiscussionPage from "flarum/forum/components/DiscussionPage";
 
 export default class UploadButton extends Component {
     oninit(vnode) {
@@ -91,8 +92,8 @@ export default class UploadButton extends Component {
 
         let did = 0;
 
-        if (app.current.discussion) {
-            did = app.current.discussion.id();
+        if (app.current.matches(DiscussionPage)) {
+            did = app.current.data.discussion.id();
         }
 
         const formData = new FormData();
