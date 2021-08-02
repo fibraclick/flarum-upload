@@ -1,5 +1,5 @@
 {
-    "name": "botfactoryit/flarum-upload",
+    "name": "fibraclick/flarum-upload",
     "description": "Upload images from Flarum post composer",
     "keywords": [
         "flarum"
@@ -7,17 +7,10 @@
     "type": "flarum-extension",
     "license": "MIT",
     "require": {
-        "flarum/core": ">=0.1.0-beta.16 <0.1.0-beta.17",
+        "flarum/core": "^1.0.0",
         "ext-fileinfo": "*",
         "intervention/image": "^2.5"
     },
-    "authors": [
-        {
-            "name": "Matteo Contrini",
-            "email": "matteo@contrini.it",
-            "role": "Developer"
-        }
-    ],
     "autoload": {
         "psr-4": {
             "BotFactory\\Upload\\": "src/"

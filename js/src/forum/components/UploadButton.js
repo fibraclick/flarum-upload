@@ -3,6 +3,7 @@ import LoadingIndicator from 'flarum/common/components/LoadingIndicator';
 import Button from 'flarum/common/components/Button';
 import classList from "flarum/common/utils/classList";
 import DiscussionPage from "flarum/forum/components/DiscussionPage";
+import Tooltip from 'flarum/common/components/Tooltip';
 
 export default class UploadButton extends Component {
     oninit(vnode) {
@@ -16,11 +17,11 @@ export default class UploadButton extends Component {
 
     oncreate(vnode) {
         super.oncreate(vnode);
-
-        this.$().tooltip();
     }
 
     onupdate(vnode) {
+        super.onupdate(vnode);
+
         if (!this.isPasteListenerAttached) {
             this.isPasteListenerAttached = true;
             this.attrs.textArea.addEventListener('paste', this.paste.bind(this));
@@ -34,26 +35,27 @@ export default class UploadButton extends Component {
         else if (!this.isLoading) buttonIcon = 'far fa-image';
 
         let label = '';
-        if (this.isLoading) label = app.translator.trans('botfactoryit-upload.forum.loading');
-        else if (this.isSuccess) label = app.translator.trans('botfactoryit-upload.forum.done');
+        if (this.isLoading) label = app.translator.trans('fibraclick-upload.forum.loading');
+        else if (this.isSuccess) label = app.translator.trans('fibraclick-upload.forum.done');
 
-        return <Button
-            className={classList([
-                'Button',
-                'hasIcon',
-                'botfactoryit-upload-button',
-                label === '' && 'Button--icon',
-            ])}
-            icon={buttonIcon}
-            onclick={this.buttonClicked.bind(this)}
-            title={app.translator.trans('botfactoryit-upload.forum.upload')}>
-            {this.isLoading && <LoadingIndicator size="tiny" className="LoadingIndicator--inline Button-icon"/>}
-            <span className="Button-label">{label}</span>
-            <form>
-                <input type="file" accept="image/*" onchange={this.formUpload.bind(this)}
-                       disabled={this.isLoading || this.isSuccess || this.isError}/>
-            </form>
-        </Button>
+        return <Tooltip text={app.translator.trans('fibraclick-upload.forum.upload')}>
+            <Button
+                className={classList([
+                    'Button',
+                    'hasIcon',
+                    'fibraclick-upload-button',
+                    label === '' && 'Button--icon',
+                ])}
+                icon={buttonIcon}
+                onclick={this.buttonClicked.bind(this)}>
+                {this.isLoading && <LoadingIndicator size="small" display="inline" />}
+                <span className="Button-label">{label}</span>
+                <form>
+                    <input type="file" accept="image/*" onchange={this.formUpload.bind(this)}
+                           disabled={this.isLoading || this.isSuccess || this.isError}/>
+                </form>
+            </Button>
+        </Tooltip>
     }
 
     paste(e) {
@@ -86,7 +88,6 @@ export default class UploadButton extends Component {
     }
 
     upload(file) {
-        this.$().tooltip('hide'); // force removal of the tooltip
         this.isLoading = true;
         m.redraw();
 
@@ -155,9 +156,9 @@ export default class UploadButton extends Component {
         let key;
 
         if (err.status === 415) {
-            key = 'botfactoryit-upload.forum.error.unsupported';
+            key = 'fibraclick-upload.forum.error.unsupported';
         } else if (err.status === 400 || err.status === 413) {
-            key = 'botfactoryit-upload.forum.error.too-big';
+            key = 'fibraclick-upload.forum.error.too-big';
         } else {
             key = 'core.lib.error.generic_message';
         }

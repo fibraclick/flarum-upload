@@ -1,8 +1,8 @@
 import app from 'flarum/app';
 
-app.initializers.add('botfactoryit-upload', () => {
+app.initializers.add('fibraclick-upload', () => {
     app.extensionData
-        .for('botfactoryit-upload')
+        .for('fibraclick-upload')
         .registerSetting(
             {
                 setting: 'botfactoryit-upload.storage-path',
