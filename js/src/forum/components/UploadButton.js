@@ -48,7 +48,7 @@ export default class UploadButton extends Component {
                 ])}
                 icon={buttonIcon}
                 onclick={this.buttonClicked.bind(this)}>
-                {this.isLoading && <LoadingIndicator size="small" display="inline" />}
+                {this.isLoading && <LoadingIndicator size="small" display="inline"/>}
                 <span className="Button-label">{label}</span>
                 <form>
                     <input type="file" accept="image/*" onchange={this.formUpload.bind(this)}
@@ -60,10 +60,9 @@ export default class UploadButton extends Component {
 
     paste(e) {
         if (this.isLoading) return;
+        if (!e.clipboardData) return;
 
-        if (e.clipboardData && e.clipboardData.items) {
-            let item = e.clipboardData.items[0];
-
+        for (let item of e.clipboardData.items) {
             if (!item.type.startsWith('image')) {
                 return;
             }
