@@ -104,7 +104,7 @@ export default class UploadButton extends Component {
 
         app.request({
             method: 'POST',
-            url: app.forum.attribute('apiUrl') + '/upload',
+            url: app.forum.attribute('apiUrl') + '/uploads',
             serialize: raw => raw,
             body: formData,
             errorHandler: (err) => this.error(err)

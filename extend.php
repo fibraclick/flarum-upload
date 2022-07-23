@@ -15,7 +15,7 @@ return [
     new Extend\Locales(__DIR__ . '/locale'),
 
     (new Extend\Routes('api'))
-        ->post('/upload', 'botfactoryit-upload', UploadController::class),
+        ->post('/uploads', 'fibraclick-upload', UploadController::class),
 
     (new Extend\Formatter)
         ->configure(AddBBCode::class)
