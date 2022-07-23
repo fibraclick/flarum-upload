@@ -61,16 +61,16 @@ export default class UploadButton extends Component {
 
     paste(e) {
         if (this.isLoading) return;
+        if (!e.clipboardData) return;
 
-        if (e.clipboardData && e.clipboardData.items) {
-            let item = e.clipboardData.items[0];
-
-            if (!item.type.startsWith('image')) {
+        // Take the first item that is an image
+        for (let i = 0; i < e.clipboardData.items.length; i++) {
+            let item = e.clipboardData.items[i];
+            if (item.type.startsWith('image')) {
+                let file = item.getAsFile();
+                this.upload(file);
                 return;
             }
-
-            let file = item.getAsFile();
-            this.upload(file);
         }
     }
 
