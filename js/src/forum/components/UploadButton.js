@@ -49,7 +49,7 @@ export default class UploadButton extends Component {
                 ])}
                 icon={buttonIcon}
                 onclick={this.buttonClicked.bind(this)}>
-                {this.isLoading && <LoadingIndicator size="small" display="inline" />}
+                {this.isLoading && <LoadingIndicator size="small" display="inline"/>}
                 <span className="Button-label">{label}</span>
                 <form>
                     <input type="file" accept="image/*" onchange={this.formUpload.bind(this)}
@@ -75,7 +75,7 @@ export default class UploadButton extends Component {
     }
 
     buttonClicked(e) {
-        this.$('input').click();
+        this.$('input').trigger('click');
     }
 
     formUpload(e) {
