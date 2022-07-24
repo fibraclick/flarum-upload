@@ -60,8 +60,6 @@ export default class UploadButton extends Component {
     }
 
     paste(e) {
-        e.preventDefault();
-
         if (this.isLoading) return;
         if (!e.clipboardData) return;
 
